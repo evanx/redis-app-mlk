@@ -1,66 +1,76 @@
-# rx-mqtt-ingress-mlk
+# redis-app-mlk
 
-Microservice for MQTT ingress into Redis streams.
+A basic Redis microservice application archetype with lifecycle support, using the stack:
 
-- `rx` - the stack includes Redis streams
-- `mlk` - suite named in honour of MLK
+- `dotenv` - env for config
+- `pino` - logging
+- `ioredis` - Redis client
 
-## config
+This repo is namespaced in honour of MLK.
 
-See https://github.com/evanx/rx-mqtt-ingress-mlk/tree/master/config
+## Demo
 
-```javascript
-module.exports = {
-  maxlen: 9999,
-  broker: {
-    protocol: 'mqtts',
-    host: 'localhost',
-    port: 8883,
-    rejectUnauthorized: false,
-  },
-  logger: {
-    level: 'info',
-  },
-  redis: {
-    host: '127.0.0.1',
-    keyPrefix: 'mr:',
-  },
-}
-```
-
-- `maxlen` - limit the size of the stream.
-
-### env
-
-A further environment variable is the MQTT `PASSWORD.` It is not included in `custom-environment-variables` so that `config` can be safely logged out at startup.
+See https://github.com/evanx/redis-app-mlk/blob/master/demo/main.js
 
 ```javascript
-module.exports = {
-  maxlen: 'MAXLEN',
-  broker: {
-    username: 'USERNAME',
+require('../lib/app')({
+  secret: {
+    password: 'PASSWORD',
   },
-  subscribeTopic: 'TOPIC',
-}
+  env: {
+    redis: {
+      host: 'REDIS_HOST',
+      port: 'REDIS_PORT',
+    },
+    logger: {
+      level: 'LOG_LEVEL',
+    },
+  },
+  config: {
+    name: 'demo',
+    redis: {
+      host: 'localhost',
+      port: 6379,
+    },
+    logger: {
+      level: 'debug',
+      prettyPrint: { colorize: true, translateTime: true },
+    },
+  },
+  async start({ config, logger, redis }) {
+    logger.info({ config }, 'start')
+    return {
+      ending: () => logger.info('ending'),
+    }
+  },
+  async loop({ config, logger, redis }) {
+    logger.info('loop')
+    return {
+      delay: 1000,
+    }
+  },
+})
 ```
-
-- `subscribeTopic` - the topic to which to subscribe and push into the stream
 
 ## Implementation
 
-https://github.com/evanx/rx-mqtt-ingress-mlk/blob/master/lib/main.js
+See https://github.com/evanx/redis-app-mlk/blob/master/lib/app.js
 
 ```javascript
-mqtt.on('connect', () => mqtt.subscribe(config.subscribeTopic))
-mqtt.on('message', (topic, message) =>
-  redis.xadd(
-    `topic:${topic}:x`,
-    'maxlen',
-    '~',
-    config.maxlen,
-    '*',
-    'message',
-    message.toString(),
-  ),
+process.on('unhandledRejection', (err, promise) =>
+  app.end({ message: 'unhandledRejection', err }),
 )
+try {
+  app.ending = await spec.start(app)
+  if (spec.loop) {
+    while (true) {
+      const res = await spec.loop(app)
+      if (res.delay) {
+        await delay(res.delay)
+      }
+    }
+  }
+} catch (err) {
+  app.end({ message: 'start', err })
+}
 ```

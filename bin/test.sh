@@ -5,8 +5,3 @@ then
   exit 1
 fi
 
-redis-cli del mr:topic:test:x
-
-PASSWORD=test TOPIC=test node lib/main.js
-
-redis-cli xrange mr:topic:test:x - +

@@ -1,16 +1,15 @@
 {
-  "name": "rx-mqtt-ingress-mlk",
+  "name": "redis-app-mlk",
   "version": "0.1.0",
-  "description": "Microservice for MQTT ingress into Redis streams.",
+  "description": "A minimal Redis microservice application archetype.",
   "main": "lib/main.js",
   "scripts": {
     "test": "jest",
-    "start": "node lib/main",
-    "start:dev": "NODE_ENV=development node lib/main"
+    "start": "node demo/main"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:evanx/rx-mqtt-ingress-mlk.git"
+    "url": "git@github.com:evanx/redis-app-mlk.git"
   },
   "keywords": [
     "Redis",
@@ -23,8 +22,8 @@
     "nodemon": "^1.19.1"
   },
   "dependencies": {
-    "async-mqtt": "^2.4.2",
     "config": "^3.2.2",
+    "delay": "^4.3.0",
     "dotenv": "^8.1.0",
     "ioredis": "^4.14.1",
     "pino": "^5.13.2",

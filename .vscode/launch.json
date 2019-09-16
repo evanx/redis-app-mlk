@@ -4,18 +4,8 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "mdel",
-      "program": "${workspaceFolder}/bin/mdel.js",
-      "env": {
-        "NODE_ENV": "development",
-        "MDEL_MATCH": "mr:*"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "main",
-      "program": "${workspaceFolder}/lib/main",
+      "name": "demo",
+      "program": "${workspaceFolder}/demo/main",
       "outputCapture": "std",
       "env": {
         "NODE_ENV": "development"
